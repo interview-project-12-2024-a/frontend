@@ -3,24 +3,36 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:frontend/app/modules/auth/controllers/auth_controller.dart';
 
-class AuthLoginView extends StatefulWidget {
+class AuthRegisterView extends StatefulWidget {
   AuthController authController = AuthController();
   @override
-  _AuthLoginViewState createState() => _AuthLoginViewState();
+  _AuthRegisterViewState createState() => _AuthRegisterViewState();
 }
 
-class _AuthLoginViewState extends State<AuthLoginView> {
+class _AuthRegisterViewState extends State<AuthRegisterView> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
   bool isLoading = false;
 
-  void login() async {
-    setState(() => isLoading = true);
+  void register() async {
+    if (passwordController.text.trim() !=
+        confirmPasswordController.text.trim()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: const Text('Passwords do not match')));
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
     try {
       await widget.authController
-          .login(emailController.text, passwordController.text);
-      // TODO save token
-      print("dbg: succesfull login");
+          .register(emailController.text, passwordController.text);
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: const Text('The email has been registered')));
+      Modular.to.navigate('/chat');
     } catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
@@ -34,7 +46,7 @@ class _AuthLoginViewState extends State<AuthLoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(title: const Text('Register')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -50,21 +62,22 @@ class _AuthLoginViewState extends State<AuthLoginView> {
               decoration: const InputDecoration(labelText: 'Password'),
               obscureText: true,
             ),
+            TextField(
+              controller: confirmPasswordController,
+              decoration: const InputDecoration(labelText: 'Confirm Password'),
+              obscureText: true,
+            ),
             const SizedBox(height: 20),
             isLoading
                 ? const CircularProgressIndicator()
                 : ElevatedButton(
-                    onPressed: login,
-                    child: const Text('Login'),
+                    onPressed: register,
+                    child: const Text('Register'),
                   ),
             const SizedBox(height: 10),
             TextButton(
-              onPressed: () => Modular.to.navigate('/reset-password'),
-              child: const Text('Forgot Password?'),
-            ),
-            TextButton(
-              onPressed: () => Modular.to.navigate('/register'),
-              child: const Text("Don't have an account? Register here"),
+              onPressed: () => Modular.to.navigate('/'),
+              child: const Text('Already have an account? Log in here'),
             ),
           ],
         ),
