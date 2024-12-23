@@ -26,4 +26,12 @@ class AuthController {
       throw Exception('Registration failed: $e');
     }
   }
+
+  Future<void> resetPassword(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email.trim());
+    } catch (e) {
+      throw Exception('Password reset failed: $e');
+    }
+  }
 }

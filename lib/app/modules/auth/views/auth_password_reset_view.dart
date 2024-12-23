@@ -3,24 +3,31 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:frontend/app/modules/auth/controllers/auth_controller.dart';
 
-class AuthLoginView extends StatefulWidget {
+class AuthPasswordResetView extends StatefulWidget {
   AuthController authController = AuthController();
   @override
-  _AuthLoginViewState createState() => _AuthLoginViewState();
+  _AuthPasswordResetViewState createState() => _AuthPasswordResetViewState();
 }
 
-class _AuthLoginViewState extends State<AuthLoginView> {
+class _AuthPasswordResetViewState extends State<AuthPasswordResetView> {
   final emailController = TextEditingController();
-  final passwordController = TextEditingController();
   bool isLoading = false;
 
-  void login() async {
-    setState(() => isLoading = true);
+  void resetPassword() async {
+    setState(() {
+      isLoading = false;
+    });
+
     try {
-      await widget.authController
-          .login(emailController.text, passwordController.text);
-      // TODO save token
-      print("dbg: succesfull login");
+      await widget.authController.resetPassword(emailController.text);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: const Text('Password reset email sent! Check your inbox.'),
+        ),
+      );
+
+      Modular.to.pop();
     } catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
@@ -34,7 +41,7 @@ class _AuthLoginViewState extends State<AuthLoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(title: const Text('Reset Password')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -45,26 +52,17 @@ class _AuthLoginViewState extends State<AuthLoginView> {
               decoration: const InputDecoration(labelText: 'Email'),
               keyboardType: TextInputType.emailAddress,
             ),
-            TextField(
-              controller: passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
             const SizedBox(height: 20),
             isLoading
                 ? const CircularProgressIndicator()
                 : ElevatedButton(
-                    onPressed: login,
-                    child: const Text('Login'),
+                    onPressed: resetPassword,
+                    child: Text('Send Reset Email'),
                   ),
             const SizedBox(height: 10),
             TextButton(
-              onPressed: () => Modular.to.navigate('/password-reset'),
-              child: const Text('Forgot Password?'),
-            ),
-            TextButton(
-              onPressed: () => Modular.to.navigate('/register'),
-              child: const Text("Don't have an account? Register here"),
+              onPressed: () => Modular.to.navigate('/'),
+              child: const Text('Back to Login'),
             ),
           ],
         ),
