@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:frontend/app/modules/auth/controllers/auth_controller.dart';
 
 class AuthLoginView extends StatefulWidget {
+  AuthController authController = AuthController();
   @override
   _AuthLoginViewState createState() => _AuthLoginViewState();
 }
@@ -14,8 +16,19 @@ class _AuthLoginViewState extends State<AuthLoginView> {
 
   void login() async {
     setState(() => isLoading = true);
-
-    print("dbg: implement login function");
+    try {
+      await widget.authController
+          .login(emailController.text, passwordController.text);
+      // TODO save token
+      print("dbg: succesfull login");
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
