@@ -19,8 +19,7 @@ class _AuthLoginViewState extends State<AuthLoginView> {
     try {
       await widget.authController
           .login(emailController.text, passwordController.text);
-      // TODO save token
-      print("dbg: succesfull login");
+      Modular.to.navigate('/chat');
     } catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
