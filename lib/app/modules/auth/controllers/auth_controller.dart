@@ -1,7 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:frontend/app/modules/auth/stores/auth_store.dart';
 
 class AuthController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final AuthStore authStore = Modular.get<AuthStore>();
 
   Future<User?> login(String email, String password) async {
     try {
@@ -9,6 +12,7 @@ class AuthController {
         email: email.trim(),
         password: password.trim(),
       );
+      authStore.setIdToken(await userCredential.user?.getIdToken());
       return userCredential.user;
     } catch (e) {
       throw Exception('Login failed: $e');
