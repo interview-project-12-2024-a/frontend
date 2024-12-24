@@ -18,7 +18,7 @@ class WebService {
         'Authorization': 'Bearer ${authStore.idToken}',
         'Content-Type': 'application/json'
       },
-      body: jsonEncode(data),
+      body: data.toJson(),
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);

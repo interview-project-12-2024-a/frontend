@@ -34,9 +34,9 @@ class Message {
   factory Message.fromMap(Map<String, dynamic> map) {
     return Message(
       message: map['message'] != null ? map['message'] as String : null,
-      timestamp: map['timestamp'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['timestamp'] as int)
-          : null,
+      // timestamp: map['timestamp'] != null
+      //     ? DateTime.fromMillisecondsSinceEpoch(map['timestamp'] as int)
+      //     : null,
       isAI: map['isAI'] != null ? map['isAI'] as bool : null,
     );
   }

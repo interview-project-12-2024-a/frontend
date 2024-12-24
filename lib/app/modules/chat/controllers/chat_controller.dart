@@ -8,9 +8,10 @@ class ChatController {
   final WebService webService = Modular.get<WebService>();
 
   Future<void> getChatList() async {
-    List<Message> messageList = await webService.get('/chat');
-    for (Message message in messageList) {
-      chatStore.addMessage(message);
+    List<dynamic> messageList = await webService.get('/chat');
+    for (var message in messageList) {
+      Message msg = Message.fromMap(message);
+      chatStore.addMessage(msg);
     }
   }
 
@@ -25,12 +26,11 @@ class ChatController {
   Future<void> sendMessage(String userMessage) async {
     var message = Message(
       message: userMessage,
-      timestamp: DateTime.now(),
+      // timestamp: DateTime.now(),
       isAI: false,
     );
     chatStore.addMessage(message);
-    Message response =
-        Message.fromJson(await webService.post('/chat', message));
+    Message response = Message.fromMap(await webService.post('/chat', message));
     chatStore.addMessage(response);
   }
 }
