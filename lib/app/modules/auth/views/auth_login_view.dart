@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:frontend/app/modules/auth/controllers/auth_controller.dart';
+import 'package:frontend/app/modules/chat/chat_routes.dart';
 
 class AuthLoginView extends StatefulWidget {
   AuthController authController = AuthController();
@@ -19,6 +20,7 @@ class _AuthLoginViewState extends State<AuthLoginView> {
     try {
       await widget.authController
           .login(emailController.text, passwordController.text);
+      print("dbg: access to chat list");
       Modular.to.navigate('/chat');
     } catch (e) {
       ScaffoldMessenger.of(context)
