@@ -15,9 +15,8 @@ class WebService {
     final response = await http.post(
       url,
       headers: {
-        'Authorizatioin': 'Bearer ${authStore.idToken}',
-        'Content-Type': 'application/json',
-        "Access-Control-Allow-Origin": "*"
+        'Authorization': 'Bearer ${authStore.idToken}',
+        'Content-Type': 'application/json'
       },
       body: jsonEncode(data),
     );
@@ -33,10 +32,7 @@ class WebService {
 
     final response = await http.get(
       url,
-      headers: {
-        'Authorizatioin': 'Bearer ${authStore.idToken}',
-        "Access-Control-Allow-Origin": "*"
-      },
+      headers: {'Authorization': 'Bearer ${authStore.idToken}'},
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);

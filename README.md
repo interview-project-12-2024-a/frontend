@@ -18,3 +18,6 @@ samples, guidance on mobile development, and a full API reference.
 
 To generate store classes
 flutter pub run build_runner build
+
+To run withouth cors 
+flutter run -d chrome --web-browser-flag "--disable-web-security"
