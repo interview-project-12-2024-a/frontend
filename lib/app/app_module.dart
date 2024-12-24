@@ -5,6 +5,7 @@ import 'package:frontend/app/modules/chat/chat_module.dart';
 import 'package:frontend/app/modules/chat/controllers/chat_controller.dart';
 import 'package:frontend/app/modules/chat/stores/chat_store.dart';
 import 'package:frontend/app/modules/shared/guards/router_guard.dart';
+import 'package:frontend/app/modules/shared/services/web_service.dart';
 import 'app_routes.dart';
 
 class AppModule extends Module {
@@ -13,6 +14,7 @@ class AppModule extends Module {
     i.addSingleton(AuthStore.new);
     i.addSingleton(ChatStore.new);
     i.add(ChatController.new);
+    i.add(WebService.new);
   }
 
   @override

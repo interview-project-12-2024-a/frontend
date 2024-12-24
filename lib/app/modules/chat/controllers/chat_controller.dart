@@ -1,12 +1,17 @@
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:frontend/app/modules/chat/stores/chat_store.dart';
 import 'package:frontend/app/modules/shared/models/message.dart';
+import 'package:frontend/app/modules/shared/services/web_service.dart';
 
 class ChatController {
   final ChatStore chatStore = Modular.get<ChatStore>();
+  final WebService webService = Modular.get<WebService>();
 
   Future<void> getChatList() async {
-    //call endpoint get /chat and save to store
+    List<Message> messageList = await webService.get('/chat');
+    for (Message message in messageList) {
+      chatStore.addMessage(message);
+    }
   }
 
   int getChatLenght() {
@@ -24,7 +29,8 @@ class ChatController {
       isAI: false,
     );
     chatStore.addMessage(message);
-
-    //TODO call post /chat endpoint and save response in message
+    Message response =
+        Message.fromJson(await webService.post('/chat', message));
+    chatStore.addMessage(response);
   }
 }
