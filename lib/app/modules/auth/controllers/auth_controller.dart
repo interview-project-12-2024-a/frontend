@@ -13,6 +13,7 @@ class AuthController {
         password: password.trim(),
       );
       authStore.setIdToken(await userCredential.user?.getIdToken());
+      authStore.setEmail(userCredential.user?.email);
       return userCredential.user;
     } catch (e) {
       throw Exception('Login failed: $e');
