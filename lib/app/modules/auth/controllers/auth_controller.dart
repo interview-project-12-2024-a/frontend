@@ -1,12 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:frontend/app/modules/auth/stores/auth_store.dart';
-import 'package:frontend/app/modules/chat/controllers/chat_controller.dart';
 
 class AuthController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final AuthStore authStore = Modular.get<AuthStore>();
-  final ChatController chatController = Modular.get<ChatController>();
 
   Future<User?> login(String email, String password) async {
     try {
@@ -16,8 +14,6 @@ class AuthController {
       );
       authStore.setIdToken(await userCredential.user?.getIdToken());
       authStore.setEmail(userCredential.user?.email);
-
-      await chatController.getChatList();
 
       return userCredential.user;
     } catch (e) {
