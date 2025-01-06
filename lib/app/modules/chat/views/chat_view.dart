@@ -5,13 +5,31 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:frontend/app/modules/chat/controllers/chat_controller.dart';
 
 class ChatView extends StatefulWidget {
-  final ChatController chatController = Modular.get<ChatController>();
   @override
   _ChatViewState createState() => _ChatViewState();
 }
 
 class _ChatViewState extends State<ChatView> {
+  final ChatController chatController = ChatController();
   final TextEditingController messageController = TextEditingController();
+  bool isLoading = false;
+
+  void sendMessage() async {
+    setState(() => isLoading = true);
+    try {
+      if (messageController.text.trim().isNotEmpty) {
+        await chatController.sendMessage(
+          messageController.text.trim(),
+        );
+        messageController.clear();
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(e.toString())));
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +41,9 @@ class _ChatViewState extends State<ChatView> {
             child: Observer(
               builder: (_) {
                 return ListView.builder(
-                  itemCount: widget.chatController.getChatLenght(),
+                  itemCount: chatController.getChatLenght(),
                   itemBuilder: (context, index) {
-                    final message = widget.chatController.getMessage(index);
+                    final message = chatController.getMessage(index);
                     final bool isUserMessage = message.isAI!;
                     return Align(
                       alignment: isUserMessage
@@ -58,6 +76,7 @@ class _ChatViewState extends State<ChatView> {
               children: [
                 Expanded(
                   child: TextField(
+
                     controller: messageController,
                     decoration: InputDecoration(
                       hintText: 'Type your message...',
@@ -67,17 +86,17 @@ class _ChatViewState extends State<ChatView> {
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.send),
-                  onPressed: () {
-                    if (messageController.text.trim().isNotEmpty) {
-                      widget.chatController.sendMessage(
-                        messageController.text.trim(),
-                      );
-                      messageController.clear();
-                    }
-                  },
-                ),
+                (isLoading || chatController.getChatListLoading())? 
+                  IconButton(
+                    icon: Icon(Icons.send),
+                    onPressed: (){},
+                    color: Colors.grey,
+                  ) 
+                : IconButton(
+                    icon: Icon(Icons.send),
+                    onPressed: sendMessage,
+                    color: Colors.blue,
+                  ),
               ],
             ),
           ),

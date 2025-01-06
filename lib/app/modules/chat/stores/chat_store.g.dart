@@ -24,8 +24,35 @@ mixin _$ChatStore on _ChatStoreBase, Store {
     });
   }
 
+  late final _$chatListLoadingAtom =
+      Atom(name: '_ChatStoreBase.chatListLoading', context: context);
+
+  @override
+  bool get chatListLoading {
+    _$chatListLoadingAtom.reportRead();
+    return super.chatListLoading;
+  }
+
+  @override
+  set chatListLoading(bool value) {
+    _$chatListLoadingAtom.reportWrite(value, super.chatListLoading, () {
+      super.chatListLoading = value;
+    });
+  }
+
   late final _$_ChatStoreBaseActionController =
       ActionController(name: '_ChatStoreBase', context: context);
+
+  @override
+  void setChatListLoading(bool isLoading) {
+    final _$actionInfo = _$_ChatStoreBaseActionController.startAction(
+        name: '_ChatStoreBase.setChatListLoading');
+    try {
+      return super.setChatListLoading(isLoading);
+    } finally {
+      _$_ChatStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void addMessage(Message message) {
@@ -41,7 +68,8 @@ mixin _$ChatStore on _ChatStoreBase, Store {
   @override
   String toString() {
     return '''
-chat: ${chat}
+chat: ${chat},
+chatListLoading: ${chatListLoading}
     ''';
   }
 }

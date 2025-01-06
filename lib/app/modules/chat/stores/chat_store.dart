@@ -8,6 +8,12 @@ class ChatStore = _ChatStoreBase with _$ChatStore;
 abstract class _ChatStoreBase with Store {
   @observable
   ObservableList<Message> chat = ObservableList.of([]);
+  @observable
+  bool chatListLoading = false;
+  @action
+  void setChatListLoading(bool isLoading) {
+    chatListLoading = isLoading;
+  }
 
   @action
   void addMessage(Message message) {

@@ -6,12 +6,21 @@ import 'package:frontend/app/modules/shared/services/web_service.dart';
 class ChatController {
   final ChatStore chatStore = Modular.get<ChatStore>();
   final WebService webService = Modular.get<WebService>();
+  
+  ChatController() {
+    this.getChatList();
+  }
 
-  Future<void> getChatList() async {
-    List<dynamic> messageList = await webService.get('/chat');
-    for (var message in messageList) {
-      Message msg = Message.fromMap(message);
-      chatStore.addMessage(msg);
+  void getChatList() {
+    //TODO: add pagination
+    if(!chatStore.chatListLoading) {
+      webService.get('/chat').then((messageList) {
+        for (var message in messageList) {
+          Message msg = Message.fromMap(message);
+          chatStore.addMessage(msg);
+        }
+        chatStore.setChatListLoading(false);
+      });
     }
   }
 
@@ -32,5 +41,9 @@ class ChatController {
     chatStore.addMessage(message);
     Message response = Message.fromMap(await webService.post('/chat', message));
     chatStore.addMessage(response);
+  }
+
+  bool getChatListLoading() {
+    return chatStore.chatListLoading;
   }
 }
