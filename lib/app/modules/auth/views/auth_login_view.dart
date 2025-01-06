@@ -10,6 +10,7 @@ class AuthLoginView extends StatefulWidget {
 }
 
 class _AuthLoginViewState extends State<AuthLoginView> {
+  //set is loading on checking auth 
   AuthController authController = AuthController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();

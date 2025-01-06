@@ -31,10 +31,31 @@ class _ChatViewState extends State<ChatView> {
     }
   }
 
+  void signOut() async {
+    setState(() => isLoading = true);
+    try {
+      await chatController.signOut();
+      Modular.to.navigate('/');
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(e.toString())));
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Chatbot')),
+      appBar: AppBar(
+        title: const Text('Chatbot'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: signOut,
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Expanded(

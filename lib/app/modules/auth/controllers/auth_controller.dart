@@ -6,6 +6,20 @@ class AuthController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final AuthStore authStore = Modular.get<AuthStore>();
 
+  AuthController() {
+    checkLoggedIn();
+  }
+
+  Future<void> checkLoggedIn() async {
+    User? user = _auth.currentUser;
+
+    if(user != null) {
+      authStore.setIdToken(await user.getIdToken());
+      authStore.setEmail(user.email);
+      Modular.to.navigate('/chat');
+    }
+  }
+
   Future<User?> login(String email, String password) async {
     try {
       final userCredential = await _auth.signInWithEmailAndPassword(
