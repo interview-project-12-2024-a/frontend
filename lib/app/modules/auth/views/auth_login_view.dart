@@ -5,12 +5,12 @@ import 'package:frontend/app/modules/auth/controllers/auth_controller.dart';
 import 'package:frontend/app/modules/chat/chat_routes.dart';
 
 class AuthLoginView extends StatefulWidget {
-  AuthController authController = AuthController();
   @override
   _AuthLoginViewState createState() => _AuthLoginViewState();
 }
 
 class _AuthLoginViewState extends State<AuthLoginView> {
+  AuthController authController = AuthController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool isLoading = false;
@@ -18,9 +18,8 @@ class _AuthLoginViewState extends State<AuthLoginView> {
   void login() async {
     setState(() => isLoading = true);
     try {
-      await widget.authController
+      await authController
           .login(emailController.text, passwordController.text);
-      print("dbg: access to chat list");
       Modular.to.navigate('/chat');
     } catch (e) {
       ScaffoldMessenger.of(context)

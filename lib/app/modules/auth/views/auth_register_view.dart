@@ -4,12 +4,12 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:frontend/app/modules/auth/controllers/auth_controller.dart';
 
 class AuthRegisterView extends StatefulWidget {
-  AuthController authController = AuthController();
   @override
   _AuthRegisterViewState createState() => _AuthRegisterViewState();
 }
 
 class _AuthRegisterViewState extends State<AuthRegisterView> {
+  AuthController authController = AuthController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
@@ -28,8 +28,7 @@ class _AuthRegisterViewState extends State<AuthRegisterView> {
     });
 
     try {
-      await widget.authController
-          .register(emailController.text, passwordController.text);
+      await authController.register(emailController.text, passwordController.text);
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: const Text('The email has been registered')));
       Modular.to.navigate('/chat');

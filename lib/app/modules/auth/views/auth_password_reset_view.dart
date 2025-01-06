@@ -4,12 +4,12 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:frontend/app/modules/auth/controllers/auth_controller.dart';
 
 class AuthPasswordResetView extends StatefulWidget {
-  AuthController authController = AuthController();
   @override
   _AuthPasswordResetViewState createState() => _AuthPasswordResetViewState();
 }
 
 class _AuthPasswordResetViewState extends State<AuthPasswordResetView> {
+  AuthController authController = AuthController();
   final emailController = TextEditingController();
   bool isLoading = false;
 
@@ -19,7 +19,7 @@ class _AuthPasswordResetViewState extends State<AuthPasswordResetView> {
     });
 
     try {
-      await widget.authController.resetPassword(emailController.text);
+      await authController.resetPassword(emailController.text);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
