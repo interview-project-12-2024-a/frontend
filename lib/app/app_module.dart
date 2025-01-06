@@ -13,7 +13,6 @@ class AppModule extends Module {
   void binds(i) {
     i.addSingleton(AuthStore.new);
     i.addSingleton(ChatStore.new);
-    i.add(WebService.new);
   }
 
   @override

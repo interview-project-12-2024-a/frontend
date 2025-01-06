@@ -5,7 +5,7 @@ import 'package:frontend/app/modules/shared/services/web_service.dart';
 
 class ChatController {
   final ChatStore chatStore = Modular.get<ChatStore>();
-  final WebService webService = Modular.get<WebService>();
+  final WebService webService = WebService();
   
   ChatController() {
     this.getChatList();
