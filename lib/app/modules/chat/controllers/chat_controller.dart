@@ -8,18 +8,30 @@ class ChatController {
   final ChatStore chatStore = Modular.get<ChatStore>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final WebService webService = WebService();
-  
-  ChatController() {
-    getChatList();
-  }
 
-  void getChatList() {
-    //TODO: add pagination
+  void getChatList() async {
     if(!chatStore.chatListLoading) {
-      webService.get('/chat').then((messageList) {
-        for (var message in messageList) {
+      await webService.get('/chat').then((messageList) {
+        for (var message in messageList.reversed) {
           Message msg = Message.fromMap(message);
           chatStore.addMessage(msg);
+        }
+        chatStore.setChatListLoading(false);
+      });
+    }
+  }
+
+  void loadNextPage() async {
+    if(!chatStore.chatListLoading) {
+      chatStore.setChatListLoading(true);
+      await webService.get('/chat?timestamp=${chatStore.chat[0].timestamp}').then((messageList) {
+        if(messageList.length == 0) {
+          chatStore.setHaveMorePages(false);
+        } else {
+          for(var message in messageList.reversed) {
+            Message msg = Message.fromMap(message);
+            chatStore.addFront(msg);
+          }
         }
         chatStore.setChatListLoading(false);
       });
@@ -43,6 +55,10 @@ class ChatController {
     chatStore.addMessage(message);
     Message response = Message.fromMap(await webService.post('/chat', message));
     chatStore.addMessage(response);
+  }
+
+  bool haveMorePages() {
+    return chatStore.haveMorePages;
   }
 
   bool getChatListLoading() {

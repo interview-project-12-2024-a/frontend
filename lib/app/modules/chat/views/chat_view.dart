@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:frontend/app/modules/chat/controllers/chat_controller.dart';
+import 'package:intl/intl.dart'; // Import intl package for formatting dates
 
 class ChatView extends StatefulWidget {
   @override
@@ -12,7 +13,24 @@ class ChatView extends StatefulWidget {
 class _ChatViewState extends State<ChatView> {
   final ChatController chatController = ChatController();
   final TextEditingController messageController = TextEditingController();
+  final ScrollController scrollController = ScrollController();
   bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Load initial messages
+    chatController.getChatList();
+
+    // Attach listener for pagination
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+              scrollController.position.maxScrollExtent &&
+          !chatController.getChatListLoading() && chatController.haveMorePages()) {
+        chatController.loadNextPage();
+      }
+    });
+  }
 
   void sendMessage() async {
     setState(() => isLoading = true);
@@ -22,10 +40,16 @@ class _ChatViewState extends State<ChatView> {
           messageController.text.trim(),
         );
         messageController.clear();
+        // Scroll to the bottom after sending a message
+        scrollController.animateTo(
+          scrollController.position.minScrollExtent,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
       }
     } catch (e) {
       ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(e.toString())));
+          .showSnackBar(SnackBar(content: Text(e.toString())));
     } finally {
       setState(() => isLoading = false);
     }
@@ -38,10 +62,15 @@ class _ChatViewState extends State<ChatView> {
       Modular.to.navigate('/');
     } catch (e) {
       ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(e.toString())));
+          .showSnackBar(SnackBar(content: Text(e.toString())));
     } finally {
       setState(() => isLoading = false);
     }
+  }
+
+  // Format timestamp
+  String formatTimestamp(DateTime timestamp) {
+    return DateFormat('yyyy-MM-dd HH:mm').format(timestamp);
   }
 
   @override
@@ -62,27 +91,56 @@ class _ChatViewState extends State<ChatView> {
             child: Observer(
               builder: (_) {
                 return ListView.builder(
-                  itemCount: chatController.getChatLenght(),
+                  controller: scrollController,
+                  reverse: true, // Show the latest messages at the bottom
+                  itemCount: chatController.getChatListLoading()
+                      ? 1
+                      : chatController.getChatLenght(),
                   itemBuilder: (context, index) {
+                    if (chatController.getChatListLoading()) {
+                      return Center(child: CircularProgressIndicator());
+                    }
                     final message = chatController.getMessage(index);
                     final bool isUserMessage = message.isAI!;
+                    final timestamp = message.timestamp != null
+                        ? DateTime.parse(message.timestamp!)
+                        : DateTime.now(); // Use current time if no timestamp
+
                     return Align(
                       alignment: isUserMessage
                           ? Alignment.centerRight
                           : Alignment.centerLeft,
                       child: Container(
                         padding: EdgeInsets.all(12),
-                        margin:
-                            EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                        margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                         decoration: BoxDecoration(
-                          color: isUserMessage ? Colors.blue : Colors.grey[300],
+                          color: isUserMessage
+                              ? Colors.blue
+                              : Colors.grey[300],
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(
-                          message.message ?? "",
-                          style: TextStyle(
-                            color: isUserMessage ? Colors.white : Colors.black,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              message.message ?? "",
+                              style: TextStyle(
+                                color: isUserMessage
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              formatTimestamp(timestamp),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: isUserMessage
+                                    ? Colors.white70
+                                    : Colors.black54,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     );
@@ -97,7 +155,6 @@ class _ChatViewState extends State<ChatView> {
               children: [
                 Expanded(
                   child: TextField(
-
                     controller: messageController,
                     decoration: InputDecoration(
                       hintText: 'Type your message...',
@@ -107,22 +164,29 @@ class _ChatViewState extends State<ChatView> {
                     ),
                   ),
                 ),
-                (isLoading || chatController.getChatListLoading())? 
-                  IconButton(
-                    icon: Icon(Icons.send),
-                    onPressed: (){},
-                    color: Colors.grey,
-                  ) 
-                : IconButton(
-                    icon: Icon(Icons.send),
-                    onPressed: sendMessage,
-                    color: Colors.blue,
-                  ),
+                (isLoading || chatController.getChatListLoading())
+                    ? IconButton(
+                        icon: Icon(Icons.send),
+                        onPressed: () {},
+                        color: Colors.grey,
+                      )
+                    : IconButton(
+                        icon: Icon(Icons.send),
+                        onPressed: sendMessage,
+                        color: Colors.blue,
+                      ),
               ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    messageController.dispose();
+    super.dispose();
   }
 }

@@ -40,8 +40,35 @@ mixin _$ChatStore on _ChatStoreBase, Store {
     });
   }
 
+  late final _$haveMorePagesAtom =
+      Atom(name: '_ChatStoreBase.haveMorePages', context: context);
+
+  @override
+  bool get haveMorePages {
+    _$haveMorePagesAtom.reportRead();
+    return super.haveMorePages;
+  }
+
+  @override
+  set haveMorePages(bool value) {
+    _$haveMorePagesAtom.reportWrite(value, super.haveMorePages, () {
+      super.haveMorePages = value;
+    });
+  }
+
   late final _$_ChatStoreBaseActionController =
       ActionController(name: '_ChatStoreBase', context: context);
+
+  @override
+  void setHaveMorePages(bool haveMore) {
+    final _$actionInfo = _$_ChatStoreBaseActionController.startAction(
+        name: '_ChatStoreBase.setHaveMorePages');
+    try {
+      return super.setHaveMorePages(haveMore);
+    } finally {
+      _$_ChatStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void setChatListLoading(bool isLoading) {
@@ -66,10 +93,22 @@ mixin _$ChatStore on _ChatStoreBase, Store {
   }
 
   @override
+  dynamic addFront(Message message) {
+    final _$actionInfo = _$_ChatStoreBaseActionController.startAction(
+        name: '_ChatStoreBase.addFront');
+    try {
+      return super.addFront(message);
+    } finally {
+      _$_ChatStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 chat: ${chat},
-chatListLoading: ${chatListLoading}
+chatListLoading: ${chatListLoading},
+haveMorePages: ${haveMorePages}
     ''';
   }
 }

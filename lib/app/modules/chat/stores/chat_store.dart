@@ -10,6 +10,14 @@ abstract class _ChatStoreBase with Store {
   ObservableList<Message> chat = ObservableList.of([]);
   @observable
   bool chatListLoading = false;
+  @observable
+  bool haveMorePages = true;
+
+  @action
+  void setHaveMorePages(bool haveMore) {
+    haveMorePages = haveMore;
+  }
+
   @action
   void setChatListLoading(bool isLoading) {
     chatListLoading = isLoading;
@@ -18,5 +26,9 @@ abstract class _ChatStoreBase with Store {
   @action
   void addMessage(Message message) {
     chat.add(message);
+  }
+
+  @action addFront(Message message) {
+    chat.insert(0, message);
   }
 }
